@@ -1,5 +1,6 @@
 // apiClient.ts
 import axios from "axios";
+import type { ApiResponse } from "../interfaces/baseInterface";
 
 // Create a global event system to communicate with AuthProvider
 let unauthorizedCallback: (() => void) | null = null;
@@ -9,7 +10,7 @@ export const setUnauthorizedCallback = (callback: (() => void) | null) => {
 };
 
 const apiClient = axios.create({
-  baseURL: process.env.API_BASE_URL,
+  baseURL: import.meta.env.VITE_API_BASE_URL || '/',
   timeout: 10000,
 });
 
@@ -35,40 +36,97 @@ apiClient.interceptors.response.use(
       }
     }
     
-    // You can add other global error handling here if needed
-    // For example, logging errors, showing generic error messages, etc.
-    
     return Promise.reject(error);
   }
 );
 
-export const apiGet = (url: string, params?: any) =>
-  apiClient.get(url, { params });
+// Normalize any payload to ApiResponse shape
+const toApiResponse = (payload: any): ApiResponse => {
+  const inferredSuccess = typeof payload?.success === 'boolean' ? payload.success : true;
+  const responseCode = payload?.responseCode as string | undefined;
+  const message = payload?.message as string | undefined;
 
-export const apiPost = (url: string, data?: any) =>
-  apiClient.post(url, data);
+  const dataFn = () => {
+    const raw = payload?.data !== undefined ? payload.data : payload;
+    if (Array.isArray(raw)) return raw as any[];
+    if (raw === undefined || raw === null) return [] as any[];
+    return [raw] as any[];
+  };
 
-export const apiPut = (url: string, data?: any) =>
-  apiClient.put(url, data);
+  return {
+    success: inferredSuccess,
+    responseCode,
+    message,
+    data: dataFn as any,
+  };
+};
 
-export const apiDelete = (url: string) =>
-  apiClient.delete(url);
+// Normalize error to ApiResponse for rejection if desired (not used currently)
+const toApiErrorResponse = (error: any): ApiResponse => {
+  const payload = error?.response?.data ?? {};
+  const message = payload?.message || error?.message || 'Request failed';
+  const responseCode = payload?.responseCode;
+  return {
+    success: false,
+    responseCode,
+    message,
+    data: (() => []) as any,
+  };
+};
 
-export const apiPatch = (url: string, data?: any) =>
-  apiClient.patch(url, data);
+export const apiGet = async (url: string, params?: any): Promise<ApiResponse> => {
+  try {
+    const data = await apiClient.get(url, { params });
+    return toApiResponse(data);
+  } catch (err: any) {
+    throw toApiErrorResponse(err);
+  }
+};
+
+export const apiPost = async (url: string, body?: any): Promise<ApiResponse> => {
+  try {
+    const data = await apiClient.post(url, body);
+    return toApiResponse(data);
+  } catch (err: any) {
+    throw toApiErrorResponse(err);
+  }
+};
+
+export const apiPut = async (url: string, body?: any): Promise<ApiResponse> => {
+  try {
+    const data = await apiClient.put(url, body);
+    return toApiResponse(data);
+  } catch (err: any) {
+    throw toApiErrorResponse(err);
+  }
+};
+
+export const apiDelete = async (url: string): Promise<ApiResponse> => {
+  try {
+    const data = await apiClient.delete(url);
+    return toApiResponse(data);
+  } catch (err: any) {
+    throw toApiErrorResponse(err);
+  }
+};
+
+export const apiPatch = async (url: string, body?: any): Promise<ApiResponse> => {
+  try {
+    const data = await apiClient.patch(url, body);
+    return toApiResponse(data);
+  } catch (err: any) {
+    throw toApiErrorResponse(err);
+  }
+};
 
 // Helper function to check if an error is a 401
 export const isUnauthorizedError = (error: any): boolean => {
-  return error?.response?.status === 401;
+  return error?.response?.status === 401 || (error?.success === false && error?.responseCode === '401');
 };
 
 // Helper function to get error message
 export const getErrorMessage = (error: any): string => {
-  if (error?.response?.data?.message) {
-    return error.response.data.message;
-  }
-  if (error?.message) {
-    return error.message;
-  }
+  if (error?.message) return error.message;
+  if (error?.response?.data?.message) return error.response.data.message;
   return 'An unexpected error occurred';
 };

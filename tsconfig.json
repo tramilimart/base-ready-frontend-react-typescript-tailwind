@@ -1,4 +1,13 @@
 {
+  "files": [],
+  "references": [
+    {
+      "path": "./tsconfig.app.json"
+    },
+    {
+      "path": "./tsconfig.node.json"
+    }
+  ],
   "compilerOptions": {
     "target": "es5",
     "lib": [
@@ -21,10 +30,11 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/*": ["src/*"]
-    }
-  },
-  "include": [
-    "src"
-  ]
+      "@/*": [
+        "./src/*"
+      ]
+    },
+    "noUnusedLocals": false,
+    "noUnusedParameters": false
+  }
 }

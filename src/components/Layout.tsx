@@ -3,7 +3,7 @@ import { Sidebar } from './Sidebar';
 import { Button } from './ui/button';
 import { Moon, Sun, Menu, PanelLeft, ChevronRight } from 'lucide-react';
 import { useTheme } from 'next-themes';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Separator } from './ui/separator';
 
@@ -13,8 +13,10 @@ interface LayoutProps {
 
 export function Layout({ children }: LayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const { theme, setTheme } = useTheme();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
@@ -29,7 +31,7 @@ export function Layout({ children }: LayoutProps) {
     const pathSegments = location.pathname.split('/').filter(Boolean);
     const breadcrumbs = ['Home'];
     
-    pathSegments.forEach((segment, index) => {
+    pathSegments.forEach((segment) => {
       const capitalized = segment.charAt(0).toUpperCase() + segment.slice(1);
       breadcrumbs.push(capitalized);
     });
@@ -53,6 +55,11 @@ export function Layout({ children }: LayoutProps) {
   };
 
   const user = getUserInfo();
+
+  const handleNavigateChangePassword = () => {
+    setIsUserMenuOpen(false);
+    navigate('/change-password');
+  };
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
@@ -85,16 +92,20 @@ export function Layout({ children }: LayoutProps) {
         </div>
 
         {/* Right side - User info and theme toggle */}
-        <div className="flex items-center space-x-4">
-          {/* User info */}
-          <div className="flex items-center space-x-3">
+        <div className="flex items-center space-x-4 relative">
+          {/* User info as dropdown trigger */}
+          <button
+            type="button"
+            className="flex items-center space-x-3 focus:outline-none"
+            onClick={() => setIsUserMenuOpen((o) => !o)}
+          >
             <Avatar className="h-8 w-8">
               <AvatarImage src="/avatar-placeholder.png" alt="User" />
               <AvatarFallback className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-sm font-medium">
                 {user?.name?.charAt(0) || 'U'}
               </AvatarFallback>
             </Avatar>
-            <div className="hidden sm:block">
+            <div className="hidden sm:block text-left">
               <p className="text-sm font-medium text-gray-900 dark:text-white">
                 {user?.name || 'User'}
               </p>
@@ -102,8 +113,20 @@ export function Layout({ children }: LayoutProps) {
                 {user?.email || 'user@example.com'}
               </p>
             </div>
-          </div>
-          
+          </button>
+
+          {/* Dropdown menu */}
+          {isUserMenuOpen && (
+            <div className="absolute right-12 top-12 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg py-1 z-50">
+              <button
+                className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
+                onClick={handleNavigateChangePassword}
+              >
+                Change password
+              </button>
+            </div>
+          )}
+
           <Separator orientation="vertical" className="h-6" />
           
           {/* Theme toggle */}

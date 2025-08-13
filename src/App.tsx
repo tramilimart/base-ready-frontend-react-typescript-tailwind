@@ -18,6 +18,7 @@ import { Reports } from './pages/Reports';
 import { Documents } from './pages/Documents';
 import { Settings } from './pages/Settings';
 import { Help } from './pages/Help';
+import ChangePassword from './pages/ChangePassword';
 
 // Create a client for React Query
 const queryClient = new QueryClient({
@@ -199,6 +200,17 @@ function App() {
                           <ProtectedRoute>
                             <Layout>
                               <Help />
+                            </Layout>
+                          </ProtectedRoute>
+                        } 
+                      />
+
+                      <Route 
+                        path="/change-password" 
+                        element={
+                          <ProtectedRoute>
+                            <Layout>
+                              <ChangePassword />
                             </Layout>
                           </ProtectedRoute>
                         } 
