@@ -1,9 +1,0 @@
-export { Login } from './Login';
-export { Dashboard } from './Dashboard';
-export { Orders } from './Orders';
-export { Products } from './Products';
-export { Customers } from './Customers';
-export { Reports } from './Reports';
-export { Documents } from './Documents';
-export { Settings } from './Settings';
-export { Help } from './Help';

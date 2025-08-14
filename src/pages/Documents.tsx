@@ -9,7 +9,7 @@ export function Documents() {
         </p>
       </div>
       
-      <div className="bg-white p-6 rounded-lg border">
+      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
         <p className="text-center text-muted-foreground">
           Documents page content will be implemented here.
         </p>

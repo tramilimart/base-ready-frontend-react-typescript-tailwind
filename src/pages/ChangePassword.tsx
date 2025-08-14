@@ -124,7 +124,7 @@ const ChangePassword: React.FC = () => {
 
     return (
         <div className="flex gap-4 p-4 pt-0">
-            <div className="rounded-xl bg-muted/50 px-7 py-6 my-box-shadow max-w-xl w-full">
+            <div className="max-w-xl w-full bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
                 <h1 className='mb-4 text-lg font-semibold'>Change Password</h1>
                 <div className="grid gap-6">
                     <div className="grid gap-2">
