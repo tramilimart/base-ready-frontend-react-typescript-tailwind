@@ -6,151 +6,102 @@ import { useTheme } from 'next-themes';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import { Separator } from './ui/separator';
+import { NavUser } from './NavUser';
 
 interface LayoutProps {
-  children: React.ReactNode;
+    children: React.ReactNode;
 }
 
 export function Layout({ children }: LayoutProps) {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const { theme, setTheme } = useTheme();
-  const location = useLocation();
-  const navigate = useNavigate();
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+    const { theme, setTheme } = useTheme();
+    const location = useLocation();
+    const navigate = useNavigate();
 
-  const toggleSidebar = () => {
-    setSidebarOpen(!sidebarOpen);
-  };
+    const toggleSidebar = () => {
+        setSidebarOpen(!sidebarOpen);
+    };
 
-  const toggleTheme = () => {
-    setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
+    const toggleTheme = () => {
+        setTheme(theme === 'dark' ? 'light' : 'dark');
+    };
 
-  // Generate breadcrumbs based on current location
-  const generateBreadcrumbs = () => {
-    const pathSegments = location.pathname.split('/').filter(Boolean);
-    const breadcrumbs = ['Home'];
-    
-    pathSegments.forEach((segment) => {
-      const capitalized = segment.charAt(0).toUpperCase() + segment.slice(1);
-      breadcrumbs.push(capitalized);
-    });
-    
-    return breadcrumbs;
-  };
+    // Generate breadcrumbs based on current location
+    const generateBreadcrumbs = () => {
+        const pathSegments = location.pathname.split('/').filter(Boolean);
+        const breadcrumbs = ['Home'];
 
-  const breadcrumbs = generateBreadcrumbs();
+        pathSegments.forEach((segment) => {
+            const capitalized = segment.charAt(0).toUpperCase() + segment.slice(1);
+            breadcrumbs.push(capitalized);
+        });
 
-  // Get user info for display
-  const getUserInfo = () => {
-    const userStr = localStorage.getItem('user');
-    if (userStr) {
-      try {
-        return JSON.parse(userStr);
-      } catch {
-        return null;
-      }
-    }
-    return null;
-  };
+        return breadcrumbs;
+    };
 
-  const user = getUserInfo();
+    const breadcrumbs = generateBreadcrumbs();
 
-  const handleNavigateChangePassword = () => {
-    setIsUserMenuOpen(false);
-    navigate('/change-password');
-  };
+    return (
+        <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
+            {/* Header */}
+            <header className={`w-full lg:w-auto bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-16 flex items-center justify-between px-6 fixed top-0 ${sidebarOpen ? 'md:left-64 sm:left-0' : 'left-0'} transition-all duration-300 ease-in-out right-0 z-40`}>
+                {/* Left side - Sidebar toggle and breadcrumbs */}
+                <div className="flex items-center space-x-4">
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={toggleSidebar}
+                        className="p-2 hidden lg:block"
+                    >
+                        <PanelLeft className="h-4 w-4" />
+                    </Button>
 
-  return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-      {/* Header */}
-      <header className={`bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 h-16 flex items-center justify-between px-6 fixed top-0 ${sidebarOpen ? 'left-64' : 'left-0'} transition-all duration-300 ease-in-out right-0 z-40`}>
-        {/* Left side - Sidebar toggle and breadcrumbs */}
-        <div className="flex items-center space-x-4">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleSidebar}
-            className="p-2"
-          >
-            <PanelLeft className="h-4 w-4" />
-          </Button>
-          
-          <Separator orientation="vertical" className="h-6" />
+                    <Separator orientation="vertical" className="h-6 bg-foreground opacity-20" />
 
-          {/* Breadcrumbs */}
-          <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
-            {breadcrumbs.map((crumb, index) => (
-              <React.Fragment key={index}>
-                {index > 0 && <ChevronRight className="h-4 w-4" />}
-                <span className={index === breadcrumbs.length - 1 ? 'text-gray-900 dark:text-white font-medium' : ''}>
-                  {crumb}
-                </span>
-              </React.Fragment>
-            ))}
-          </div>
-        </div>
+                    {/* Breadcrumbs */}
+                    <div className="flex items-center space-x-2 text-sm text-gray-600 dark:text-gray-400">
+                        {breadcrumbs.map((crumb, index) => (
+                            <React.Fragment key={index}>
+                                {index > 0 && <ChevronRight className="h-4 w-4" />}
+                                <span className={index === breadcrumbs.length - 1 ? 'text-gray-900 dark:text-white font-medium' : ''}>
+                                    {crumb}
+                                </span>
+                            </React.Fragment>
+                        ))}
+                    </div>
+                </div>
 
-        {/* Right side - User info and theme toggle */}
-        <div className="flex items-center space-x-4 relative">
-          {/* User info as dropdown trigger */}
-          <button
-            type="button"
-            className="flex items-center space-x-3 focus:outline-none"
-            onClick={() => setIsUserMenuOpen((o) => !o)}
-          >
-            <Avatar className="h-8 w-8">
-              <AvatarImage src="/avatar-placeholder.png" alt="User" />
-              <AvatarFallback className="bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-300 text-sm font-medium">
-                {user?.name?.charAt(0) || 'U'}
-              </AvatarFallback>
-            </Avatar>
-            <div className="hidden sm:block text-left">
-              <p className="text-sm font-medium text-gray-900 dark:text-white">
-                {user?.name || 'User'}
-              </p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">
-                {user?.email || 'user@example.com'}
-              </p>
+                {/* Right side - User info and theme toggle */}
+                <div className="flex items-center space-x-4 relative">
+
+                    {/* Theme toggle */}
+                    <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={toggleTheme}
+                        className="p-2"
+                        title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
+                    >
+                        {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
+                    </Button>
+
+                    <Separator orientation="vertical" className="h-6 bg-foreground opacity-20" />
+
+                    {/* Account Information */}
+                    <NavUser />
+                </div>
+            </header>
+
+            {/* Sidebar */}
+            <Sidebar isOpen={sidebarOpen} />
+
+            {/* Main content area */}
+            <div className={`pt-16 transition-all duration-300 ease-in-out ${sidebarOpen ? 'lg:pl-64' : 'lg:pl-0'}`}>
+                <main className="p-6">
+                    {children}
+                </main>
             </div>
-          </button>
-
-          {/* Dropdown menu */}
-          {isUserMenuOpen && (
-            <div className="absolute right-12 top-12 w-48 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg py-1 z-50">
-              <button
-                className="w-full text-left px-3 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700"
-                onClick={handleNavigateChangePassword}
-              >
-                Change password
-              </button>
-            </div>
-          )}
-
-          <Separator orientation="vertical" className="h-6" />
-          
-          {/* Theme toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleTheme}
-            className="p-2"
-            title={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode`}
-          >
-            {theme === 'dark' ? <Sun className="h-5 w-5" /> : <Moon className="h-5 w-5" />}
-          </Button>
         </div>
-      </header>
-
-      {/* Sidebar */}
-      <Sidebar isOpen={sidebarOpen} />
-      
-      {/* Main content area */}
-      <div className={`pt-16 transition-all duration-300 ease-in-out ${sidebarOpen ? 'lg:pl-64' : 'lg:pl-0'}`}>
-        <main className="p-6">
-          {children}
-        </main>
-      </div>
-    </div>
-  );
+    );
 }
