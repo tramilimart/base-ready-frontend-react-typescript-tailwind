@@ -5,7 +5,7 @@ import { useToast } from '../hooks/use-toast';
 import { useAuth } from '../providers/AuthProvider';
 import { apiGet, isUnauthorizedError } from '../utils/apiClient';
 
-export function Orders() {
+const Orders = () => {
   const { showSuccess, showError, showWarning, showInfo } = useSnackbarNotification();
   const { toast } = useToast();
   const { showUnauthorizedDialog } = useAuth();
@@ -96,103 +96,144 @@ export function Orders() {
   };
 
   return (
-    <div className="space-y-2">
-      <div className="flex items-center justify-between">
-        <div>
-          <span className="text-muted-foreground dark:text-gray-400">
-            Manage your customer orders and track their status.
-          </span>
+    <div>
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <div>
+            <p className="text-muted-foreground dark:text-gray-400">
+              Manage your orders and track their status.
+            </p>
+          </div>
         </div>
-      </div>
-      
-      {/* Test Buttons Section */}
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Test Notifications</h2>
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Snackbar Notifications</h3>
+
+        {/* Test Buttons Section */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Test Notifications & API Calls
+          </h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <Button 
-              onClick={handleTestSnackbars} 
-              variant="outline" 
-              className="w-full"
+              onClick={handleTestSnackbars}
+              className="bg-blue-600 hover:bg-blue-700 text-white"
             >
               Test Snackbars
             </Button>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Tests success, error, warning, and info snackbars
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Toast Notifications</h3>
+            
             <Button 
-              onClick={handleTestToasts} 
-              variant="outline" 
-              className="w-full"
+              onClick={handleTestToasts}
+              className="bg-green-600 hover:bg-green-700 text-white"
             >
               Test Toasts
             </Button>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Tests default and destructive toast variants
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Mixed Notifications</h3>
+            
             <Button 
-              onClick={handleTestMixedNotifications} 
-              variant="default" 
-              className="w-full"
+              onClick={handleTestMixedNotifications}
+              className="bg-purple-600 hover:bg-purple-700 text-white"
             >
-              Test Both
+              Test Mixed Notifications
             </Button>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Tests both Snackbar and Toast simultaneously
-            </p>
-          </div>
-
-          <div className="space-y-3">
-            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300">Auth Provider Test</h3>
+            
             <Button 
-              onClick={handleTestUnauthorized} 
-              variant="destructive" 
-              className="w-full"
+              onClick={handleTestUnauthorized}
+              className="bg-orange-600 hover:bg-orange-700 text-white"
             >
-              Test 401 Dialog
+              Test Unauthorized Dialog
             </Button>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
-              Simulates unauthorized access dialog
-            </p>
+            
+            <Button 
+              onClick={() => handleTestApiCall(false)}
+              disabled={isLoading}
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            >
+              {isLoading ? 'Loading...' : 'Test API Success'}
+            </Button>
+            
+            <Button 
+              onClick={() => handleTestApiCall(true)}
+              disabled={isLoading}
+              className="bg-red-600 hover:bg-red-700 text-white"
+            >
+              {isLoading ? 'Loading...' : 'Test Real API 401'}
+            </Button>
           </div>
         </div>
-      </div>
 
-      {/* Sample Orders Content */}
-      <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-        <h2 className="text-lg font-semibold mb-4 text-gray-900 dark:text-white">Recent Orders</h2>
-        <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-700">
-              <div>
-                <h3 className="font-medium text-gray-900 dark:text-white">Order #{1000 + i}</h3>
-                <p className="text-sm text-gray-500 dark:text-gray-400">Customer {i} • ${(50 + i * 25).toFixed(2)}</p>
+        {/* Orders Content */}
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+            Recent Orders
+          </h2>
+          
+          <div className="space-y-4">
+            {[1, 2, 3, 4, 5].map((order) => (
+              <div 
+                key={order} 
+                className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700"
+              >
+                <div className="flex items-center space-x-4">
+                  <div className="h-10 w-10 rounded-full bg-blue-100 dark:bg-blue-900 flex items-center justify-center">
+                    <span className="text-blue-600 dark:text-blue-300 text-sm font-medium">
+                      #{order}
+                    </span>
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
+                      Order #{1000 + order}
+                    </p>
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
+                      Customer {order} • ${(Math.random() * 1000).toFixed(2)}
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span className="px-2 py-1 text-xs font-medium rounded-full bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200">
+                    Completed
+                  </span>
+                  <span className="text-sm text-gray-500 dark:text-gray-400">
+                    {order} day{order !== 1 ? 's' : ''} ago
+                  </span>
+                </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <span className={`px-2 py-1 text-xs rounded-full ${
-                  i === 1 ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-300' : 
-                  i === 2 ? 'bg-yellow-100 dark:bg-yellow-900 text-yellow-800 dark:text-yellow-300' : 
-                  'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-300'
-                }`}>
-                  {i === 1 ? 'Completed' : i === 2 ? 'Pending' : 'Processing'}
-                </span>
-                <Button variant="outline" size="sm">
-                  View Details
-                </Button>
-              </div>
-            </div>
-          ))}
+            ))}
+          </div>
+        </div>
+
+        {/* Order Statistics */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              Total Orders
+            </h3>
+            <p className="text-3xl font-bold text-blue-600 dark:text-blue-400">1,234</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              +12% from last month
+            </p>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              Pending Orders
+            </h3>
+            <p className="text-3xl font-bold text-orange-600 dark:text-orange-400">23</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              -5% from last week
+            </p>
+          </div>
+          
+          <div className="bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
+            <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+              Revenue
+            </h3>
+            <p className="text-3xl font-bold text-green-600 dark:text-green-400">$45,678</p>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              +8% from last month
+            </p>
+          </div>
         </div>
       </div>
     </div>
   );
-}
+};
+
+export default Orders;

@@ -13,11 +13,13 @@ import {
     HelpCircle,
     LogOut,
     PanelLeft,
-    X
+    X,
+    ReceiptText
 } from 'lucide-react';
 
 const navigation = [
     { name: 'Dashboard', href: '/', icon: Home },
+    { name: 'Billing', href: '/billing', icon: ReceiptText },
     { name: 'Orders', href: '/orders', icon: ShoppingCart },
     { name: 'Products', href: '/products', icon: Package },
     { name: 'Customers', href: '/customers', icon: Users },

@@ -14,7 +14,8 @@ import { UpdatePasswordDtls, ApiResponse } from '../interfaces/baseInterface';
 import { apiPost } from '../utils/apiClient';
 import { useToast } from '../hooks/use-toast';
 
-const ChangePassword: React.FC = () => {
+
+const ChangePassword = () => {
     const [isViewOldPassword, setIsViewOldPassword] = useState<boolean>(false);
     const [isViewNewPassword, setIsViewNewPassword] = useState<boolean>(false);
     const [isViewRetypePassword, setIsViewRetypePassword] = useState<boolean>(false);
@@ -101,154 +102,157 @@ const ChangePassword: React.FC = () => {
                   variant: "destructive",
                 });
             }
+            setIsValidatingPassword(false);
         },
-        onError: () => {
+        onError: (error: any) => {
             toast({
-              title: 'Error',
-              description: 'Network error occurred. Please try again later.',
+              title: "Error",
+              description: error.message ?? "Failed to update user password.",
               variant: "destructive",
             });
-        },
-        onSettled: () => {
             setIsValidatingPassword(false);
         }
     });
 
-    const isValidPassword = (text: string) => {
-        const hasUpperCase = /[A-Z]/.test(text);
-        const hasLowerCase = /[a-z]/.test(text);
-        const hasSpecialChar = /[^A-Za-z0-9]/.test(text);
-
+    const isValidPassword = (password: string): boolean => {
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
         return hasUpperCase && hasLowerCase && hasSpecialChar;
-    }
+    };
+
+    const clearForm = () => {
+        setPasswords({
+            oldPassword: '',
+            newPassword: '',
+            retypePassword: ''
+        });
+    };
 
     return (
-        <div className="flex gap-4 p-4 pt-0">
-            <div className="max-w-xl w-full bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700">
-                <h1 className='mb-4 text-lg font-semibold'>Change Password</h1>
-                <div className="grid gap-6">
-                    <div className="grid gap-2">
-                        <Label htmlFor="old_pword" className="text-sm font-medium">Old Password</Label>
-                        <div className="relative w-full">
-                            <Input
-                                id="old_pword"
-                                name="old_pword"
-                                type={isViewOldPassword ? "text" : "password"}
-                                value={passwords.oldPassword}
-                                placeholder="Enter old password"
-                                required
-                                onChange={(e) => {
-                                    setPasswords({ ...passwords, oldPassword: e.target.value });
-                                }}
-                                className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
-                            />
-                            <div className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-foreground/70">
-                                {isViewOldPassword ? (
-                                    <EyeOff
-                                        onClick={() => setIsViewOldPassword(false)}
-                                    />
-                                ) : (
-                                    <Eye
-                                        onClick={() => setIsViewOldPassword(true)}
-                                    />
-                                )}
+        <div>
+            <div className='space-y-2'>
+                <div>
+                    <p className='text-muted-foreground'>
+                        Change your account password to keep your account secure.
+                    </p>
+                </div>
+
+                <div className='bg-white dark:bg-gray-800 p-6 rounded-lg border border-gray-200 dark:border-gray-700'>
+                    <div className="space-y-4">
+                        <div>
+                            <label htmlFor="oldPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Current Password
+                            </label>
+                            <div className="relative">
+                                <input
+                                    id="oldPassword"
+                                    type={isViewOldPassword ? "text" : "password"}
+                                    value={passwords.oldPassword}
+                                    onChange={(e) => setPasswords({ ...passwords, oldPassword: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
+                                    placeholder="Enter your current password"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setIsViewOldPassword(!isViewOldPassword)}
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                >
+                                    {isViewOldPassword ? (
+                                        <EyeOff className="h-5 w-5 text-gray-400" />
+                                    ) : (
+                                        <Eye className="h-5 w-5 text-gray-400" />
+                                    )}
+                                </button>
                             </div>
                         </div>
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="new_pword" className="text-sm font-medium">New Password</Label>
-                        <div className="relative w-full">
-                            <Input
-                                id="new_pword"
-                                name="new_pword"
-                                type={isViewNewPassword ? "text" : "password"}
-                                value={passwords.newPassword}
-                                placeholder="Enter new password"
-                                required
-                                onChange={(e) => {
-                                    setPasswords({ ...passwords, newPassword: e.target.value });
-                                }}
-                                className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
-                            />
-                            <div className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-foreground/70">
-                                {isViewNewPassword ? (
-                                    <EyeOff
-                                        onClick={() => setIsViewNewPassword(false)}
-                                    />
-                                ) : (
-                                    <Eye
-                                        onClick={() => setIsViewNewPassword(true)}
-                                    />
-                                )}
+
+                        <div>
+                            <label htmlFor="newPassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                New Password
+                            </label>
+                            <div className="relative">
+                                <input
+                                    id="newPassword"
+                                    type={isViewNewPassword ? "text" : "password"}
+                                    value={passwords.newPassword}
+                                    onChange={(e) => setPasswords({ ...passwords, newPassword: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
+                                    placeholder="Enter your new password"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setIsViewNewPassword(!isViewNewPassword)}
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                >
+                                    {isViewNewPassword ? (
+                                        <EyeOff className="h-5 w-5 text-gray-400" />
+                                    ) : (
+                                        <Eye className="h-5 w-5 text-gray-400" />
+                                    )}
+                                </button>
                             </div>
                         </div>
-                    </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="retype_pword" className="text-sm font-medium">Re-type Password</Label>
-                        <div className="relative w-full">
-                            <Input
-                                id="retype_pword"
-                                name="retype_pword"
-                                type={isViewRetypePassword ? "text" : "password"}
-                                value={passwords.retypePassword}
-                                placeholder="Re-type new password"
-                                required
-                                onChange={(e) => {
-                                    setPasswords({ ...passwords, retypePassword: e.target.value });
-                                }}
-                                className="block w-full rounded-md border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500"
-                            />
-                            <div className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-foreground/70">
-                                {isViewRetypePassword ? (
-                                    <EyeOff
-                                        onClick={() => setIsViewRetypePassword(false)}
-                                    />
-                                ) : (
-                                    <Eye
-                                        onClick={() => setIsViewRetypePassword(true)}
-                                    />
-                                )}
+
+                        <div>
+                            <label htmlFor="retypePassword" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                                Confirm New Password
+                            </label>
+                            <div className="relative">
+                                <input
+                                    id="retypePassword"
+                                    type={isViewRetypePassword ? "text" : "password"}
+                                    value={passwords.retypePassword}
+                                    onChange={(e) => setPasswords({ ...passwords, retypePassword: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-white placeholder-gray-500 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-blue-400 dark:focus:border-blue-400"
+                                    placeholder="Confirm your new password"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setIsViewRetypePassword(!isViewRetypePassword)}
+                                    className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                                >
+                                    {isViewRetypePassword ? (
+                                        <EyeOff className="h-5 w-5 text-gray-400" />
+                                    ) : (
+                                        <Eye className="h-5 w-5 text-gray-400" />
+                                    )}
+                                </button>
                             </div>
+                        </div>
+
+                        <div className="flex space-x-3">
+                            <Button
+                                onClick={validatePassword}
+                                disabled={isValidatingPassword}
+                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white"
+                            >
+                                {isValidatingPassword ? (
+                                    <>
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                        Updating...
+                                    </>
+                                ) : (
+                                    <>
+                                        <Send className="mr-2 h-4 w-4" />
+                                        Update Password
+                                    </>
+                                )}
+                            </Button>
+                            <Button
+                                onClick={clearForm}
+                                variant="outline"
+                                className="border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                            >
+                                <Eraser className="mr-2 h-4 w-4" />
+                                Clear
+                            </Button>
                         </div>
                     </div>
                 </div>
-
-                <div className="flex gap-2 w-full justify-end mt-8">
-                    <Button
-                        type="button"
-                        className='w-32'
-                        variant={"outline"}
-                        onClick={() =>
-                            setPasswords({
-                                oldPassword: '',
-                                newPassword: '',
-                                retypePassword: ''
-                            })
-                        }
-                    >
-                        <Eraser />Clear
-                    </Button>
-                    <Button
-                        type="button"
-                        className='w-32'
-                        onClick={() => validatePassword()}
-                        disabled={passwords.oldPassword === '' || passwords.newPassword === '' || passwords.retypePassword === '' || isValidatingPassword}
-                    >
-                        {isValidatingPassword ? (
-                            <>
-                                <Loader2 className="animate-spin" /> Updating...
-                            </>
-                        ) : (
-                            <>
-                                <Send />Submit
-                            </>
-                        )}
-                    </Button>
-                </div>
-
             </div>
         </div>
-    )
-}
+    );
+};
 
 export default ChangePassword;

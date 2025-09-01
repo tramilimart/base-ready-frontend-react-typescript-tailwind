@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../co
 import { useSnackbarNotification } from '../hooks/use-snackbar';
 import { useAuth } from '../providers/AuthProvider';
 
-export function Login() {
+const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -112,60 +112,66 @@ export function Login() {
                     id="remember-me"
                     name="remember-me"
                     type="checkbox"
-                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-700"
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
                   />
-                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900 dark:text-gray-300">
+                  <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700 dark:text-gray-300">
                     Remember me
                   </label>
                 </div>
 
                 <div className="text-sm">
-                  <button 
-                    type="button"
-                    className="font-medium text-blue-600 dark:text-blue-400 hover:text-blue-500 dark:hover:text-blue-300"
-                  >
+                  <a href="#" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
                     Forgot your password?
-                  </button>
+                  </a>
                 </div>
               </div>
 
-              <div className="space-y-3">
+              <div>
                 <Button
                   type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 dark:bg-blue-600 dark:hover:bg-blue-700 text-white"
                   disabled={isLoading}
+                  className="w-full bg-blue-600 hover:bg-blue-700 text-white"
                 >
                   {isLoading ? 'Signing in...' : 'Sign in'}
                 </Button>
-
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="w-full border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
-                  onClick={handleDemoLogin}
-                  disabled={isLoading}
-                >
-                  Use Demo Credentials
-                </Button>
               </div>
-            </form>
 
-            <div className="mt-6">
               <div className="relative">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300 dark:border-gray-600" />
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">Demo Account</span>
+                  <span className="px-2 bg-white dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                    Or
+                  </span>
                 </div>
               </div>
-              <div className="mt-2 text-center text-xs text-gray-500 dark:text-gray-400">
-                Email: demo@example.com | Password: demo123
+
+              <div>
+                <Button
+                  type="button"
+                  onClick={handleDemoLogin}
+                  variant="outline"
+                  className="w-full border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                >
+                  Use Demo Credentials
+                </Button>
               </div>
-            </div>
+            </form>
           </CardContent>
         </Card>
+
+        <div className="text-center">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Don't have an account?{' '}
+            <a href="#" className="font-medium text-blue-600 hover:text-blue-500 dark:text-blue-400 dark:hover:text-blue-300">
+              Contact your administrator
+            </a>
+          </p>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default Login;

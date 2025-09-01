@@ -9,15 +9,16 @@ import { Layout } from './components/Layout';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { PublicRoute } from './components/PublicRoute';
 import { AuthProvider } from './providers';
-import { Login } from './pages/Login';
-import { Dashboard } from './pages/Dashboard';
-import { Orders } from './pages/Orders';
-import { Products } from './pages/Products';
-import { Customers } from './pages/Customers';
-import { Reports } from './pages/Reports';
-import { Documents } from './pages/Documents';
-import { Settings } from './pages/Settings';
-import { Help } from './pages/Help';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import Orders from './pages/Orders';
+import Products from './pages/Products';
+import Customers from './pages/Customers';
+import Reports from './pages/Reports';
+import Documents from './pages/Documents';
+import Settings from './pages/Settings';
+import Help from './pages/Help';
+import Billing from './pages/Billing';
 import ChangePassword from './pages/ChangePassword';
 
 // Create a client for React Query
@@ -97,129 +98,150 @@ function App() {
             maxSnack={3}
             anchorOrigin={{
               vertical: 'bottom',
-              horizontal: 'center',
+              horizontal: 'right',
             }}
-            autoHideDuration={3000}
           >
             <Router>
               <AuthProvider>
                 <Suspense fallback={<LoadingFallback />}>
                   <div className="App">
                     <Routes>
-                      {/* Public Routes (Login) */}
-                      <Route 
-                        path="/login" 
+                      {/* Public Routes */}
+                      <Route
+                        path="/login"
                         element={
                           <PublicRoute>
                             <Login />
                           </PublicRoute>
-                        } 
+                        }
                       />
 
-                      {/* Protected Routes (Dashboard and other pages) */}
-                      <Route 
-                        path="/" 
+                      {/* Protected Routes */}
+                      <Route
+                        path="/"
                         element={
                           <ProtectedRoute>
                             <Layout>
                               <Dashboard />
                             </Layout>
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      
-                      <Route 
-                        path="/orders" 
+
+                      <Route
+                        path="/dashboard"
+                        element={
+                          <ProtectedRoute>
+                            <Layout>
+                              <Dashboard />
+                            </Layout>
+                          </ProtectedRoute>
+                        }
+                      />
+
+                      <Route
+                        path="/orders"
                         element={
                           <ProtectedRoute>
                             <Layout>
                               <Orders />
                             </Layout>
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      
-                      <Route 
-                        path="/products" 
+
+                      <Route
+                        path="/products"
                         element={
                           <ProtectedRoute>
                             <Layout>
                               <Products />
                             </Layout>
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      
-                      <Route 
-                        path="/customers" 
+
+                      <Route
+                        path="/customers"
                         element={
                           <ProtectedRoute>
                             <Layout>
                               <Customers />
                             </Layout>
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      
-                      <Route 
-                        path="/reports" 
+
+                      <Route
+                        path="/reports"
                         element={
                           <ProtectedRoute>
                             <Layout>
                               <Reports />
                             </Layout>
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      
-                      <Route 
-                        path="/documents" 
+
+                      <Route
+                        path="/documents"
                         element={
                           <ProtectedRoute>
                             <Layout>
                               <Documents />
                             </Layout>
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      
-                      <Route 
-                        path="/settings" 
+
+                      <Route
+                        path="/settings"
                         element={
                           <ProtectedRoute>
                             <Layout>
                               <Settings />
                             </Layout>
                           </ProtectedRoute>
-                        } 
+                        }
                       />
-                      
-                      <Route 
-                        path="/help" 
+
+                      <Route
+                        path="/help"
                         element={
                           <ProtectedRoute>
                             <Layout>
                               <Help />
                             </Layout>
                           </ProtectedRoute>
-                        } 
+                        }
                       />
 
-                      <Route 
-                        path="/change-password" 
+                      <Route
+                        path="/billing"
+                        element={
+                          <ProtectedRoute>
+                            <Layout>
+                              <Billing />
+                            </Layout>
+                          </ProtectedRoute>
+                        }
+                      />
+
+                      <Route
+                        path="/change-password"
                         element={
                           <ProtectedRoute>
                             <Layout>
                               <ChangePassword />
                             </Layout>
                           </ProtectedRoute>
-                        } 
+                        }
                       />
 
-                      {/* Catch all route - redirect to dashboard if authenticated, login if not */}
-                      <Route 
-                        path="*" 
-                        element={<Navigate to="/" replace />} 
+                      {/* Catch all route - redirect to dashboard */}
+                      <Route
+                        path="*"
+                        element={<Navigate to="/dashboard" replace />}
                       />
                     </Routes>
                     <Toaster />
