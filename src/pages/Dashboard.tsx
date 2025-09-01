@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../components/ui/card';
 import { Button } from '../components/ui/button';
 import { BarChart3, Users, Package, DollarSign } from 'lucide-react';
 import { useSnackbarNotification } from '../hooks/use-snackbar';
+import { apiGet } from '@/utils/apiClient';
 
 const Dashboard = () => {
     const { showSuccess, showError, showWarning, showInfo } = useSnackbarNotification();
+
+    console.log('Rendering Dashboard');
 
     const handleTestNotifications = () => {
         showSuccess('This is a success message!');
@@ -13,6 +16,24 @@ const Dashboard = () => {
         setTimeout(() => showWarning('This is a warning message!'), 2000);
         setTimeout(() => showInfo('This is an info message!'), 3000);
     };
+
+    useEffect(() => {
+        checkHealth();
+    }, []);
+
+    const checkHealth = async () => {
+        try {
+            console.log('Checking health..');
+            const response = await apiGet('/api/health');
+            if (!response.success) {
+                console.log('Failed connection.')
+                return;
+            }
+            showSuccess('API is healthy and reachable!');
+        } catch (e: any) {
+            console.error('Error occured:', e);
+        }
+    }
 
     return (
         <div>
